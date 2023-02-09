@@ -75,34 +75,23 @@ def get_neighbors(point):
     lat, lng = point
     return [(lat + 0.025, lng + 0.025), (lat - 0.025, lng - 0.025), (lat + 0.025, lng - 0.025), (lat - 0.025, lng + 0.025)]
 
-def display_route_on_map(api_key, center):
-    #if path is None:
-    #    return
-
-    # Encode the path as a polyline
-
+def display_route_on_map(api_key, center, pathstring):
 
     # Build the URL for the static map
     url = "https://maps.googleapis.com/maps/api/staticmap?"
-    #url += f"size=400x400&path=color:0x0000ff|enc:{polyline}"
-    #url += f"&key={api_key}"
-    #center = "Kelowna"
     zoom = 15
     scale = 4
 
     r = requests.get(url + "center=" + str(center[0])+","+str(center[1]) + "&zoom=" + str(zoom) 
                      + "&maptype=satellite" + "&scale=" + str(scale)
+                     + "&path="+ str(center[0]-.0025)+","+str(center[1]-.0025)+"|"+ str(center[0])+","+str(center[1])+"|"+ str(center[0]+.0025)+","+str(center[1])
                      + "&size=1200x1200&key=" + api_key)
     map = r.content
-    print(map)
+
     f = open("Pictures/Pictures"+str(center)+".png", 'wb')
-    
-    # r.content gives content,
-    # in this case gives image
+    # r.content gives content, in this case gives image
     f.write(map)
-    
-    # close method of file object
-    # save and close the file
+    # close method of file object save and close the file
     f.close()
 
 
