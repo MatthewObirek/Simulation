@@ -1,5 +1,6 @@
 import requests
 import json
+import math
 
 # Function to calculate the total distance and change in elevation between two points
 def calculate_distance(point1, point2, api_key):
@@ -69,12 +70,15 @@ def get_neighbors(point):
     # Add code to get the neighbors of the given point based on the desired resolution and geography.
     # Example:
     lat, lng = point
-    return [(lat + 0.1, lng + 0.1), (lat - 0.1, lng - 0.1), (lat + 0.1, lng - 0.1), (lat - 0.1, lng + 0.1)]
+    return [(lat + 0.025, lng + 0.025), (lat - 0.025, lng - 0.025), (lat + 0.025, lng - 0.025), (lat - 0.025, lng + 0.025)]
 
 # Example usage
-start = (37.7749, -122.4194)
-end = (37.7972, -122.4533)
-api_key = "YOUR_API_KEY"
+start = (49.886894, -119.497638)
+end = (49.919958, -119.393355)
+f = open("API_KEY.txt","r")
+api_key = f.readline()
+print(api_key)
 max_elev_diff = 100
 shortest_path = find_shortest_path(start, end, api_key, max_elev_diff)
 print("Shortest path:", shortest_path)
+#print(get_elevation(end, api_key))
