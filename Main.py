@@ -1,6 +1,8 @@
 import requests
 import json
 import math
+import cv2
+import sys
 
 # Function to calculate the total distance and change in elevation between two points
 def calculate_distance(point1, point2, api_key):
@@ -36,7 +38,7 @@ def get_elevation(point, api_key):
 # Function to find the shortest path between two points with an allowable change in altitude
 def find_shortest_path(start, end, api_key, max_elev_diff):
     # Add the starting point to the queue
-    queue = [(start, 0)]
+    queue = [(start, get_elevation(start, api_key))]
     visited = set()
 
     # Continue searching until the queue is empty
@@ -60,6 +62,7 @@ def find_shortest_path(start, end, api_key, max_elev_diff):
         for neighbor in neighbors:
             distance, elev_diff = calculate_distance(point, neighbor, api_key)
             if elev_diff <= max_elev_diff:
+                print(elev_diff)
                 queue.append((neighbor, elev_diff))
 
     # Return None if no path was found
@@ -72,13 +75,50 @@ def get_neighbors(point):
     lat, lng = point
     return [(lat + 0.025, lng + 0.025), (lat - 0.025, lng - 0.025), (lat + 0.025, lng - 0.025), (lat - 0.025, lng + 0.025)]
 
+def display_route_on_map(api_key, center):
+    #if path is None:
+    #    return
+
+    # Encode the path as a polyline
+
+
+    # Build the URL for the static map
+    url = "https://maps.googleapis.com/maps/api/staticmap?"
+    #url += f"size=400x400&path=color:0x0000ff|enc:{polyline}"
+    #url += f"&key={api_key}"
+    #center = "Kelowna"
+    zoom = 15
+    scale = 4
+
+    r = requests.get(url + "center=" + str(center[0])+","+str(center[1]) + "&zoom=" + str(zoom) 
+                     + "&maptype=satellite" + "&scale=" + str(scale)
+                     + "&size=1200x1200&key=" + api_key)
+    map = r.content
+    print(map)
+    f = open("Pictures/Pictures"+str(center)+".png", 'wb')
+    
+    # r.content gives content,
+    # in this case gives image
+    f.write(map)
+    
+    # close method of file object
+    # save and close the file
+    f.close()
+
+
+
+
 # Example usage
 start = (49.886894, -119.497638)
 end = (49.919958, -119.393355)
 f = open("API_KEY.txt","r")
 api_key = f.readline()
-print(api_key)
+print(str(start[0])+","+str(start[1]))
+print(get_elevation(end, api_key))
 max_elev_diff = 100
-shortest_path = find_shortest_path(start, end, api_key, max_elev_diff)
-print("Shortest path:", shortest_path)
-#print(get_elevation(end, api_key))
+display_route_on_map(api_key, start)
+display_route_on_map(api_key, end)
+
+#shortest_path = find_shortest_path(start, end, api_key, max_elev_diff)
+#print("Shortest path:", shortest_path)
+
