@@ -12,3 +12,16 @@ Because I do not want to share my API key with anyone. I have saved it to a file
     - [ ] Max speed would be based of off max grade and max turn radius.
     - [ ] lower average speed, paired with max speed, would allow for "shorter routes" with more bends or switch banks.
     - [ ] Max Time travelled will be the biggest determiner of the route, paired only with grade.
+
+### Example path finding algorithm
+if a point has (lat, lng, elv, distance)
+
+def ShortestPath(start, end, maxGrade):
+    distance = calculateDistance(start, end):
+    neighbors = get_neighbors(start)
+
+    for neighbor in neighbors
+        rank neightbors by distance smallest to largest
+    
+    For point in rankedNeighbors
+        Path = Path + ShortestPath(point)
