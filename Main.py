@@ -107,7 +107,7 @@ def display_route_on_map(api_key, center, pathstring, zoom):
                      + "&size=1200x1200&key=" + api_key)
     map = r.content
 
-    f = open("Pictures/Pictures1"+str(center)+".png", 'wb')
+    f = open("Pictures/Pictures2"+str(center)+".png", 'wb')
     # r.content gives content, in this case gives image
     f.write(map)
     # close method of file object save and close the file
@@ -129,12 +129,12 @@ def toURLString(pathSet):
 
 # Example usage
 start = (49.886894, -119.497638)
-end   = (49.919958, -119.393355)
+end   = (49.267365, -123.088535)
 f = open("API_KEY.txt","r")
 api_key = f.readline()
 print(str(start[0])+","+str(start[1]))
 print(get_elevation(end, api_key))
-max_elev_diff = 100
+max_elev_diff = 50
 
 distance = calculate_distance(start, end)
 #print(distance)
@@ -149,6 +149,6 @@ pathString = toURLString(shortest_path)
 print(pathString)
 display_route_on_map(api_key, start, pathString, 15)
 display_route_on_map(api_key, end, pathString, 15)
-display_route_on_map(api_key, (49.92689400000002,-119.44763800000004), pathString, 12)
+display_route_on_map(api_key, (49.517933, -121.035625), pathString, 8)
 #print("Shortest path:", shortest_path)
 
