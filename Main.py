@@ -3,6 +3,15 @@ import json
 import math
 from queue import PriorityQueue
 from geopy.distance import geodesic
+#TODO: Task list
+#! Rewrite mapRouteToPNG for better naming scheme
+#! call and save elevation data to speed up runtimes - call and save to a file.
+#! find potential way to include full path programatically.
+#! Delete all current pictures - rename them
+#! - or call large area all at once
+#! Fix Path Finding Algorithm, allowing it to choose options that are farther away than present - only if a closer option is not available.
+
+
 
 # Function to calculate the total distance and change in elevation between two points
 def calculate_elevation_difference(point1, point2, api_key):
@@ -63,9 +72,13 @@ def find_shortest_path(start, end, api_key, max_elev_diff):
         # Add the neighbors to the queue if the change in elevation is within the allowed limit
         i = 0
         chosen = 0
+        shortest_available_distance = -1;
         for neighbor in neighbors:
             elev_change = calculate_elevation_difference(point, neighbor, api_key)
             distance = calculate_distance(neighbor, end)
+            if shortest_available_distance == -1:
+                shortest_available_distance = distance
+                
             if elev_change <= max_elev_diff and distance < shortest_distance:
                 chosen = i
                 nextPoint = neighbor
@@ -95,7 +108,7 @@ def get_neighbors(point):
             (lat + 0.005, lng + 0.005), (lat - 0.005, lng - 0.005),
             (lat + 0.005, lng - 0.005), (lat - 0.005, lng + 0.005)]
 
-def display_route_on_map(api_key, center, pathstring, zoom):
+def mapRouteToPNG(api_key, center, zoom, pathstring):
 
     # Build the URL for the static map
     url = "https://maps.googleapis.com/maps/api/staticmap?"
@@ -128,27 +141,20 @@ def toURLString(pathSet):
 
 
 # Example usage
-start = (49.886894, -119.497638)
-end   = (49.267365, -123.088535)
+start = (49.900138, -119.366779)
+end   = (49.484091, -119.600200)
 f = open("API_KEY.txt","r")
 api_key = f.readline()
 print(str(start[0])+","+str(start[1]))
 print(get_elevation(end, api_key))
 max_elev_diff = 50
 
-distance = calculate_distance(start, end)
-#print(distance)
-#for i in range(1,20):
-#    lat, lng = start
-#    start = (lat-.00, lng+.005)
-#    distance = calculate_distance(start, end)
-#    print(distance)
 completePath, shortest_path = find_shortest_path(start, end, api_key, max_elev_diff)
 print("Complete Path: " + str(completePath))
 pathString = toURLString(shortest_path)
 print(pathString)
-display_route_on_map(api_key, start, pathString, 15)
-display_route_on_map(api_key, end, pathString, 15)
-display_route_on_map(api_key, (49.517933, -121.035625), pathString, 8)
+mapRouteToPNG(api_key, start, 15, pathString)
+mapRouteToPNG(api_key, end, 15, pathString)
+mapRouteToPNG(api_key, (49.67933, -119.535625), 9, pathString)
 #print("Shortest path:", shortest_path)
 
