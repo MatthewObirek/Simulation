@@ -14,24 +14,24 @@ from geopy.distance import geodesic
 
 
 # Function to calculate the total distance and change in elevation between two points
-def calculate_elevation_difference(point1, point2, api_key):
+def calculateElevationDifference(point1, point2, api_key):
     # Get the elevation data for the two points
-    elev1 = get_elevation(point1, api_key)
-    elev2 = get_elevation(point2, api_key)
+    elev1 = getElevation(point1, api_key)
+    elev2 = getElevation(point2, api_key)
 
     # Calculate the change in elevation
     elev_diff = abs(elev1 - elev2)
 
     return elev_diff
 
-def calculate_distance(point1, point2):
+def calculateDistance(point1, point2):
     # Calculate the distance between the two points using the Haversine formula
     distance = geodesic(point1, point2).kilometers
     # Return the total distance and change in elevation
     return distance
 
 # Function to get the elevation for a given point from the Google Elevation API
-def get_elevation(point, api_key):
+def getElevation(point, api_key):
     lat, lng = point
     url = f"https://maps.googleapis.com/maps/api/elevation/json?locations={lat},{lng}&key={api_key}"
     response = requests.get(url)
@@ -39,14 +39,14 @@ def get_elevation(point, api_key):
     return data["results"][0]["elevation"]
 
 # Function to find the shortest path between two points with an allowable change in altitude
-def find_shortest_path(start, end, api_key, max_elev_diff):
+def findShortestPath(start, end, api_key, max_elev_diff):
     # Add the starting point to the queue
     queue = PriorityQueue()
     queue.put(( start, [start]))
     visited = set()
     lat_diff_threshold = 0.005
     lng_diff_threshold = 0.005
-    shortest_distance = calculate_distance(start, end)
+    shortest_distance = calculateDistance(start, end)
 
     # Continue searching until the queue is empty
     while not queue.empty():
@@ -74,12 +74,12 @@ def find_shortest_path(start, end, api_key, max_elev_diff):
         chosen = 0
         shortest_available_distance = -1;
         for neighbor in neighbors:
-            elev_change = calculate_elevation_difference(point, neighbor, api_key)
-            distance = calculate_distance(neighbor, end)
+            elevChange = calculateElevationDifference(point, neighbor, api_key)
+            distance = calculateDistance(neighbor, end)
             if shortest_available_distance == -1:
                 shortest_available_distance = distance
                 
-            if elev_change <= max_elev_diff and distance < shortest_distance:
+            if elevChange <= max_elev_diff and distance < shortest_distance:
                 chosen = i
                 nextPoint = neighbor
                 shortest_distance = distance
@@ -108,7 +108,7 @@ def get_neighbors(point):
             (lat + 0.005, lng + 0.005), (lat - 0.005, lng - 0.005),
             (lat + 0.005, lng - 0.005), (lat - 0.005, lng + 0.005)]
 
-def mapRouteToPNG(api_key, center, zoom, pathstring):
+def mapRouteToPNG(api_key, center, zoom, pathstring, name="Picture"):
 
     # Build the URL for the static map
     url = "https://maps.googleapis.com/maps/api/staticmap?"
@@ -120,7 +120,7 @@ def mapRouteToPNG(api_key, center, zoom, pathstring):
                      + "&size=1200x1200&key=" + api_key)
     map = r.content
 
-    f = open("Pictures/Pictures2"+str(center)+".png", 'wb')
+    f = open("Pictures/"+name+"z"+str(zoom)+"l"+str(center)+".png", 'wb')
     # r.content gives content, in this case gives image
     f.write(map)
     # close method of file object save and close the file
@@ -145,16 +145,14 @@ start = (49.900138, -119.366779)
 end   = (49.484091, -119.600200)
 f = open("API_KEY.txt","r")
 api_key = f.readline()
-print(str(start[0])+","+str(start[1]))
-print(get_elevation(end, api_key))
 max_elev_diff = 50
 
-completePath, shortest_path = find_shortest_path(start, end, api_key, max_elev_diff)
+completePath, shortest_path = findShortestPath(start, end, api_key, max_elev_diff)
 print("Complete Path: " + str(completePath))
 pathString = toURLString(shortest_path)
 print(pathString)
-mapRouteToPNG(api_key, start, 15, pathString)
-mapRouteToPNG(api_key, end, 15, pathString)
-mapRouteToPNG(api_key, (49.67933, -119.535625), 9, pathString)
+mapRouteToPNG(api_key, start, 12, pathString, "Kel")
+mapRouteToPNG(api_key, end, 12, pathString, "Pen")
+mapRouteToPNG(api_key, (49.67933, -119.535625), 9, pathString, "KelToPen")
 #print("Shortest path:", shortest_path)
 
