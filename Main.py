@@ -30,22 +30,70 @@ def calculateDistance(point1, point2):
     # Return the total distance and change in elevation
     return distance
 
+def loadElevation(start, end, res, api_key):
+    sLat, sLng = start
+    eLat, eLng = end
+    
+    latDif = eLat - sLat
+    lngDif = eLng - sLng
+
+    latDir = 0
+    lngDir = 0
+
+    if latDif < 0:
+        latDir = -1
+    elif latDif > 0:
+        latDir = 1
+    else:
+        latDir = 0
+
+    if lngDif < 0:
+        lngDir = -1
+    elif lngDif > 0:
+        lngDir = 1
+    else:
+        lngDir = 0
+
+    latDif = abs(sLat - eLat)
+    lngDif = abs(sLng - eLng)
+    i = 0
+    locations = ""
+    while not (latDif <= res): #change in latitudue
+        sLng = start[1]
+        lngDif = abs(sLng - eLng)
+        while not (lngDif <= res): # change in longitude
+            if i != 0:
+                locations += f"|"
+            locations += f"{sLat},{sLng}"
+            print(f"{sLat}, {sLng}")
+            i=i+1
+            sLng = sLng + (lngDir * res)
+            lngDif = abs(sLng - eLng)
+            print(lngDif)
+        sLat = sLat + (latDir * res)
+        latDif = abs(sLat - eLat)
+        print(latDif)
+
+    print(getElevation(locations, api_key))
+    #center = ((end[0] - start[0])/2 + start[0], (end[1] - start[1])/2 + start[1]) 
+    #mapRouteToPNG(api_key, center, 13, locations)
+    
+
 # Function to get the elevation for a given point from the Google Elevation API
 def getElevation(point, api_key):
-    lat, lng = point
-    url = f"https://maps.googleapis.com/maps/api/elevation/json?locations={lat},{lng}&key={api_key}"
+    #lat, lng = point
+    url = f"https://maps.googleapis.com/maps/api/elevation/json?locations="+point+f"&key={api_key}"
     response = requests.get(url)
+    print(response.text)
     data = json.loads(response.text)
     return data["results"][0]["elevation"]
 
 # Function to find the shortest path between two points with an allowable change in altitude
-def findShortestPath(start, end, api_key, max_elev_diff):
+def findShortestPath(start, end, max_elev_diff, res ,api_key):
     # Add the starting point to the queue
     queue = PriorityQueue()
     queue.put(( start, [start]))
     visited = set()
-    lat_diff_threshold = 0.005
-    lng_diff_threshold = 0.005
     shortest_distance = calculateDistance(start, end)
 
     # Continue searching until the queue is empty
@@ -63,11 +111,11 @@ def findShortestPath(start, end, api_key, max_elev_diff):
         lat_pnt, lng_pnt = point
         lat_diff = abs(lat_pnt - lat_end)
         lng_diff = abs(lng_pnt - lng_end)
-        if lat_diff <= lat_diff_threshold and lng_diff <= lng_diff_threshold:
+        if lat_diff <= res and lng_diff <= res:
             return True, path
 
         # Get the neighbors of the current point
-        neighbors = get_neighbors(point)
+        neighbors = get_neighbors(point, res)
 
         # Add the neighbors to the queue if the change in elevation is within the allowed limit
         i = 0
@@ -99,14 +147,14 @@ def findShortestPath(start, end, api_key, max_elev_diff):
     return False, path
 
 # Function to get the neighbors of a given point
-def get_neighbors(point):
+def get_neighbors(point, res):
     # Add code to get the neighbors of the given point based on the desired resolution and geography.
     # Example:
     lat, lng = point
-    return [(lat + 0.005, lng),         (lat - 0.005, lng),
-            (lat, lng - 0.005),         (lat, lng + 0.005),
-            (lat + 0.005, lng + 0.005), (lat - 0.005, lng - 0.005),
-            (lat + 0.005, lng - 0.005), (lat - 0.005, lng + 0.005)]
+    return [(lat + res, lng),         (lat - res, lng),
+            (lat, lng - res),         (lat, lng + res),
+            (lat + res, lng + res), (lat - res, lng - res),
+            (lat + res, lng - res), (lat - res, lng + res)]
 
 def mapRouteToPNG(api_key, center, zoom, pathstring, name="Picture"):
 
@@ -142,17 +190,25 @@ def toURLString(pathSet):
 
 # Example usage
 start = (49.900138, -119.366779)
-end   = (49.484091, -119.600200)
+end   = (49.950138, -119.316779) #(49.484091, -119.600200)
+
+mid   = ((end[0] - start[0])/2 + start[0], (end[1] - start[1])/2 + start[1]) 
 f = open("API_KEY.txt","r")
 api_key = f.readline()
 max_elev_diff = 50
+resolution = .005
 
-completePath, shortest_path = findShortestPath(start, end, api_key, max_elev_diff)
-print("Complete Path: " + str(completePath))
-pathString = toURLString(shortest_path)
-print(pathString)
-mapRouteToPNG(api_key, start, 12, pathString, "Kel")
-mapRouteToPNG(api_key, end, 12, pathString, "Pen")
-mapRouteToPNG(api_key, (49.67933, -119.535625), 9, pathString, "KelToPen")
+print(mid)
+
+loadElevation(start, end, resolution, api_key)
+
+
+#completePath, shortest_path = findShortestPath(start, end, max_elev_diff, resolution, api_key)
+#print("Complete Path: " + str(completePath))
+#pathString = toURLString(shortest_path)
+#print(pathString)
+#mapRouteToPNG(api_key, mid, 13, pathString, "Kel")
+#mapRouteToPNG(api_key, end, 12, pathString, "Pen")
+#mapRouteToPNG(api_key, (49.67933, -119.535625), 9, pathString, "KelToPen")
 #print("Shortest path:", shortest_path)
 
