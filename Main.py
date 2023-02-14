@@ -3,13 +3,13 @@ import json
 import math
 from queue import PriorityQueue
 from geopy.distance import geodesic
+import Point
 #TODO: Task list
-#! Rewrite mapRouteToPNG for better naming scheme
 #! call and save elevation data to speed up runtimes - call and save to a file.
 #! find potential way to include full path programatically.
-#! Delete all current pictures - rename them
 #! - or call large area all at once
 #! Fix Path Finding Algorithm, allowing it to choose options that are farther away than present - only if a closer option is not available.
+
 
 
 
