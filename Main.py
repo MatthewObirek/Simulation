@@ -3,7 +3,7 @@ import json
 import math
 from queue import PriorityQueue
 from geopy.distance import geodesic
-import Point
+import PointData
 #TODO: Task list
 #! call and save elevation data to speed up runtimes - call and save to a file.
 #! find potential way to include full path programatically.

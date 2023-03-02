@@ -1,17 +1,18 @@
 import requests
 import json
 
-class Point:
-    def __init__(self, lat, lng, elev):
+class PointData:
+    def __init__(self, lat, lng, elev, denc=None, traf=None):
         self.lat = lat
         self.lng = lng
         self.elev = elev
-
+        self.denc = denc
+        self.traf = traf
     def __repr__(self):
-        return f"Point({self.lat}, {self.lng}, {self.elev})"    
+        return f"Point({self.lat}, {self.lng}, {self.elev}) - Density:{self.denc}, Traffic;{self.traf}"    
 
 
-def APILoadArray(start: Point, end: Point, res, api_key):
+def APILoadArray(start: PointData, end: PointData, res, api_key):
     sLat = start.lat
     sLng = start.lng
     eLat = end.lat
@@ -88,12 +89,12 @@ def APILoadArray(start: Point, end: Point, res, api_key):
     lngDif = abs(sLng - eLng)
 
     i = 0
-    pointMap = [Point(0, 0, 0) for i in range(90)]
+    pointMap = [PointData(0, 0, 0) for i in range(90)]
     while not (latDif <= res): #change in latitudue
         sLng = start.lng
         lngDif = abs(sLng - eLng)
         while not (lngDif <= res): # change in longitude
-            pointMap[i] = Point(sLat, sLng, elevData[i])
+            pointMap[i] = PointData(sLat, sLng, elevData[i])
             print(f"{sLat}, {sLng}")
             i=i+1
             sLng = sLng + (lngDir * res)
@@ -123,8 +124,8 @@ def get_elevation(lat, lng, elevation_map):
     return elevation_map.get((lat, lng), None)
 
 
-start = Point(49.900138, -119.366779, 0)
-end   = Point(49.950138, -119.316779, 0) #(49.484091, -119.600200)
+start = PointData(49.900138, -119.366779, 0)
+end   = PointData(49.950138, -119.316779, 0) #(49.484091, -119.600200)
 
 mid   = ((end.lat - start.lat)/2 + start.lat, (end.lng - start.lng)/2 + start.lng) 
 f = open("API_KEY.txt","r")
