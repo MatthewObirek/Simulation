@@ -5,6 +5,9 @@ from queue import PriorityQueue
 from geopy.distance import geodesic
 import PointData
 #TODO: Task list
+#! Use GoogleMaps instead of Requests.
+#! Implement PointData properly
+#! Implement HashMap for General Elevation, and PointData for Path elveaton. 
 #! call and save elevation data to speed up runtimes - call and save to a file.
 #! find potential way to include full path programatically.
 #! - or call large area all at once
