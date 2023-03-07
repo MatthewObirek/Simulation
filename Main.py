@@ -1,9 +1,25 @@
 import requests
 import json
 import math
+import os
+import pandas as pd
+from bokeh.io import output_notebook
+from bokeh.io import show
+from bokeh.plotting import gmap
+from bokeh.models import GMapOptions
 from queue import PriorityQueue
 from geopy.distance import geodesic
+
 import PointData
+
+bokeh_width, bokeh_height = 500, 400
+
+def plot(api_key, lat, lng, zoom=10, map_type='roadmap'):
+    gmap_options = GMapOptions(lat=lat, lng=lng, map_type=map_type, zoom=zoom)
+    p = gmap(api_key, gmap_options, title='Pays de Gex', width=bokeh_width, height=bokeh_height)
+    show(p)
+    return p
+
 #TODO: Task list
 #! Use GoogleMaps instead of Requests.
 #! Implement PointData properly
@@ -12,6 +28,8 @@ import PointData
 #! find potential way to include full path programatically.
 #! - or call large area all at once
 #! Fix Path Finding Algorithm, allowing it to choose options that are farther away than present - only if a closer option is not available.
+
+
 
 
 
@@ -197,13 +215,15 @@ end   = (49.950138, -119.316779) #(49.484091, -119.600200)
 
 mid   = ((end[0] - start[0])/2 + start[0], (end[1] - start[1])/2 + start[1]) 
 f = open("API_KEY.txt","r")
-api_key = f.readline()
+api_key = f.read().strip()
 max_elev_diff = 50
 resolution = .005
 
-print(mid)
+p = plot(api_key, mid[0],mid[1]);
 
-loadElevation(start, end, resolution, api_key)
+#print(mid)
+
+#loadElevation(start, end, resolution, api_key)
 
 
 #completePath, shortest_path = findShortestPath(start, end, max_elev_diff, resolution, api_key)

@@ -5,6 +5,9 @@ I plan to use Python and <a href="https://console.cloud.google.com/google/maps-a
   
 ### API_KEY and Running Project
 Because I do not want to share my API key with anyone. I have saved it to a file that is not in the git repo. To run this software, you must create a `API_KEY.txt` File, and put *your own* API key on the first line.
+### REALIZATION
+I will need to switch to javascript, because that is the language taht Google likes
+
 
 ### Goals
 - [ ] Include a Weighted Decision Matrix exploring different modes of transit for specified corridors
