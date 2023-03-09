@@ -34,3 +34,7 @@
 # Personal API key
 API_KEY.txt
 test
+
+#osmData
+osmData/*.osm
+osmData/*.osm.pbf
