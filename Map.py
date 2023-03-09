@@ -1,30 +1,49 @@
-from bokeh.io import output_notebook, show
-from bokeh.plotting import gmap
-from bokeh.models import GMapOptions
+import tkinter
+import tkintermapview
 
-f = open("API_KEY.txt","r")
-api_key = f.read().strip()
+# create tkinter window
+root_tk = tkinter.Tk()
+root_tk.geometry(f"{1000}x{700}")
+root_tk.title("map_view_simple_example.py")
 
-# Set up Google Maps API options
-map_options = GMapOptions(lat=37.7749, lng=-122.4194, map_type="roadmap", zoom=13)
+# create map widget
+map_widget = tkintermapview.TkinterMapView(root_tk, width=1000, height=700, corner_radius=0)
+map_widget.pack(fill="both", expand=True)
 
-# Create the plot
-p = gmap(google_api_key=google_maps_api_key, map_options=map_options, title="My Path")
+# set other tile server (standard is OpenStreetMap)
+# map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)  # google normal
+# map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)  # google satellite
 
-# Define the latitude and longitude coordinates of the 5 points
-points = [
-    (37.7901, -122.3996),  # Point 1
-    (37.7895, -122.4009),  # Point 2
-    (37.7886, -122.4021),  # Point 3
-    (37.7878, -122.4029),  # Point 4
-    (37.7872, -122.4043)   # Point 5
-]
+# set current position and zoom
+# map_widget.set_position(52.516268, 13.377695, marker=False)  # Berlin, Germany
+# map_widget.set_zoom(17)
 
-# Extract the latitude and longitude coordinates into separate lists
-latitudes, longitudes = zip(*points)
+# set current position with address
+# map_widget.set_address("Berlin Germany", marker=False)
 
-# Add the points to the plot
-p.circle(x=longitudes, y=latitudes, size=15, fill_color='blue')
+def marker_click(marker):
+    print(f"marker clicked - text: {marker.text}  position: {marker.position}")
 
-# Show the plot
-show(p)
+
+start = (49.900138, -119.366779)
+end   = (49.950138, -119.316779) #(49.484091, -119.600200)
+
+mid   = ((end[0] - start[0])/2 + start[0], (end[1] - start[1])/2 + start[1]) 
+map_widget.set_position(mid[0], mid[1], marker=False)  # Berlin, Germany
+map_widget.set_zoom(12)
+
+
+# set a position marker (also with a custom color and command on click)
+marker_2 = map_widget.set_marker(start[0],start[1] , text="Brandenburger Tor", command=marker_click)
+marker_3 = map_widget.set_marker(end[0], end[1], text="52.55, 13.4")
+# marker_3.set_position(...)
+# marker_3.set_text(...)
+# marker_3.delete()
+
+# set a path
+path_1 = map_widget.set_path([marker_2.position, marker_3.position, start, end])
+# path_1.add_position(...)
+# path_1.remove_position(...)
+# path_1.delete()
+
+root_tk.mainloop()
