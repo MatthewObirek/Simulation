@@ -1,8 +1,8 @@
 import tkinter
 import tkintermapview
-import osm2rail as orl
-import osmium as osm
-import pandas as pd
+#import osm2rail as orl
+#import osmium as osm
+#import pandas as pd
 import sys
 from typing import List, Callable
 from collections import deque
